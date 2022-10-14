@@ -14,3 +14,8 @@ tools:
       - args: ['make', '-j@PARALLELISM@']
     install:
       - args: ['make', 'install']
+
+tasks:
+  - name: dump-vbios
+    args: ['sudo', '@SOURCE_ROOT@/scripts/dump-vbios.sh', 'vbios.rom']
+    workdir: '@BUILD_ROOT@'
