@@ -1,5 +1,11 @@
 .*
 !.git*
 
+*.xbstrap
+
 __pycache__
 logs/
+tools/
+build/
+
+!build/bootstrap-site.yml

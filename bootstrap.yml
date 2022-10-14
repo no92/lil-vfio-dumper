@@ -1,0 +1,16 @@
+tools:
+  - name: vfio-qemu
+    source:
+      subdir: 'tools'
+      git: 'https://github.com/qemu/qemu.git'
+      tag: 'v7.1.0'
+    configure:
+      - args:
+        - '@THIS_SOURCE_DIR@/configure'
+        - '--target-list=x86_64-softmmu'
+        - '--enable-trace-backend=log'
+        - '--prefix=@PREFIX@'
+    compile:
+      - args: ['make', '-j@PARALLELISM@']
+    install:
+      - args: ['make', 'install']

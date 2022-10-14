@@ -1,0 +1,31 @@
+From b9a4163bec4d6d67b6ad386d56ab6cc1fe5edb4f Mon Sep 17 00:00:00 2001
+From: no92 <no92.mail@gmail.com>
+Date: Fri, 14 Oct 2022 17:11:21 +0200
+Subject: [PATCH] vfio: force mmap support off
+
+---
+ hw/vfio/common.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/hw/vfio/common.c b/hw/vfio/common.c
+index ace9562..a16fdf1 100644
+--- a/hw/vfio/common.c
++++ b/hw/vfio/common.c
+@@ -1775,12 +1775,12 @@ void vfio_region_mmaps_set_enabled(VFIORegion *region, bool enabled)
+ 
+     for (i = 0; i < region->nr_mmaps; i++) {
+         if (region->mmaps[i].mmap) {
+-            memory_region_set_enabled(&region->mmaps[i].mem, enabled);
++            memory_region_set_enabled(&region->mmaps[i].mem, 0);
+         }
+     }
+ 
+     trace_vfio_region_mmaps_set_enabled(memory_region_name(region->mem),
+-                                        enabled);
++                                        0);
+ }
+ 
+ void vfio_reset_handler(void *opaque)
+-- 
+2.37.3
+
