@@ -72,10 +72,10 @@ ddi_aux_data = []
 def parse_region_regs(addr, data, write):
 	ret = []
 	if addr in [0x64014, 0x64018, 0x6401C, 0x64020, 0x64024, 0x64028]:
-		ddi_aux_data.append(data & 0xFF)
-		ddi_aux_data.append((data >> 8) & 0xFF)
-		ddi_aux_data.append((data >> 16) & 0xFF)
 		ddi_aux_data.append((data >> 24) & 0xFF)
+		ddi_aux_data.append((data >> 16) & 0xFF)
+		ddi_aux_data.append((data >> 8) & 0xFF)
+		ddi_aux_data.append(data & 0xFF)
 	elif addr == 0x64010:
 		ret.append("Sync Pulse Count {}".format((data & 0x1F) + 1))
 		ret.append("Fast Wake Sync Pulse Count {}".format(((data >> 5) & 0x1F) + 1))
@@ -98,12 +98,26 @@ def parse_region_regs(addr, data, write):
 		if data & 0x02000000:
 			ret.append('Receive error')
 		if write and ddi_aux_data:
-			ret.append('\n')
-			ret.append('request: {}'.format(ddi_aux_data[0] & 0xF))
+			ret.append('\n\t')
+			req_command = (ddi_aux_data[0] >> 4) & 0xF
+			req_dpcd = ((ddi_aux_data[0] & 0xF) << 16) | (ddi_aux_data[1] << 8) | ddi_aux_data[2]
+			req_len = ddi_aux_data[3]
+			if(req_command & 0x08):
+				ret.append('Native AUX')
+			else:
+				ret.append('I2C over AUX')
+			if(req_command & 0x01):
+				ret.append('Read')
+			else:
+				ret.append('Write')
+			if(req_command & 0x04 and not req_command & 0x8):
+				ret.append('MOT')
+			ret.append('DPCD 0x{:X}'.format(req_dpcd))
+			ret.append('len 0x{:X}'.format(req_len))
 		ddi_aux_data.clear()
 		if ret:
 			ret = ', '.join(ret)
 	if ret:
-		return ' ({})'.format(ret)
+		return '\n\t({})'.format(ret)
 	else:
 		return ''
